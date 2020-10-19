@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:share/share.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -12,16 +13,16 @@ Future<MemeData> fetchAlbum() async {
   }
 }
 
-class MemeData{
+class MemeData {
   final String url;
   MemeData({this.url});
-  factory MemeData.fromJson(Map<String, dynamic>json){
+  factory MemeData.fromJson(Map<String, dynamic> json) {
     return MemeData(
       url: json['url'],
     );
   }
 }
-
+String path = '';
 void main() {
   runApp(MyApp());
 }
@@ -33,12 +34,18 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-    Future<MemeData> futureMemeData;
-    @override
-    void didChangeDependencies() {
-      super.didChangeDependencies();
-      futureMemeData = fetchAlbum();
-    }
+  Future<MemeData> futureMemeData;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    futureMemeData = fetchAlbum();
+  }
+  void _onShareTap() {
+    final RenderBox box = context.findRenderObject();
+    Share.share(path,
+        sharePositionOrigin:
+        box.localToGlobal(Offset.zero) & box.size);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +60,12 @@ class _MyAppState extends State<MyApp> {
           children: [
             Expanded(
               child: FutureBuilder<MemeData>(
+
                 future: futureMemeData,
                 builder: (context, snapshot) {
+
                   if (snapshot.hasData) {
+                    path = snapshot.data.url;
                     return Image.network(snapshot.data.url);
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");
@@ -69,10 +79,21 @@ class _MyAppState extends State<MyApp> {
               children: [
                 Expanded(
                   child: RaisedButton(
+                    color: Colors.blue,
                     onPressed: () {
-                      setState
-                        (() {
-                       didChangeDependencies();
+                      setState(() {
+                        _onShareTap();
+                      });
+                    },
+                    child: Text('SHARE'),
+                  ),
+                ),
+                Expanded(
+                  child: RaisedButton(
+                    color: Colors.red,
+                    onPressed: () {
+                      setState(() {
+                        didChangeDependencies();
                       });
                     },
                     child: Text('NEXT'),

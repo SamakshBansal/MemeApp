@@ -4,8 +4,8 @@
 
 #import "GeneratedPluginRegistrant.h"
 
-#if __has_include(<share/FLTSharePlugin.h>)
-#import <share/FLTSharePlugin.h>
+#if __has_include(<share/SharePlugin.h>)
+#import <share/SharePlugin.h>
 #else
 @import share;
 #endif
